@@ -1,5 +1,5 @@
 <template>
-  <div class="part">
+  <div class="part" :class="position">
     <img :src="selectedPart.src" title="arm"/>
     <button @click="selectPreviousPart()" class="prev-selector"></button>
     <button @click="selectNextPart()" class="next-selector"></button>
@@ -20,7 +20,10 @@ function getNextValidIndex(index, length) {
 }
 
 export default {
-  props: ['parts'],
+  props: {
+    parts: { type: Array },
+    position: { type: String },
+  },
   data() {
     return { selectedPartIndex: 0 };
   },
