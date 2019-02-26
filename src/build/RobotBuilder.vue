@@ -1,0 +1,288 @@
+<template>
+      <div class="content">
+        <button class="add-to-cart" @click="addToCart()">
+          Add To Cart</button>
+    <div class="top-row">
+      <div :class="[saleBorderClass, 'top', 'part']">
+        <div class="robot-name">
+          {{selectedRobot.head.title}}
+          <span v-if="selectedRobot.head.onSale"
+           class="sale">Sale!</span>
+          </div>
+        <img :src="selectedRobot.head.src" title="head"/>
+        <button @click="selectPreviousHead()" class="prev-selector">&#9668;</button>
+        <button @click="selectNextHead()" class="next-selector">&#9658;</button>
+      </div>
+    </div>
+    <div class="middle-row">
+      <div class="left part">
+        <img :src="selectedRobot.leftArm.src" title="left arm"/>
+        <button @click="selectPreviousLeftArm()" class="prev-selector">&#9650;</button>
+        <button @click="selectNextLeftArm()" class="next-selector">&#9660;</button>
+      </div>
+      <div class="center part">
+        <img :src="selectedRobot.torso.src" title="torso"/>
+        <button @click="selectPreviousTorso()" class="prev-selector">&#9668;</button>
+        <button @click="selectNextTorso()" class="next-selector">&#9658;</button>
+      </div>
+      <div class="right part">
+        <img :src="selectedRobot.rightArm.src" title="right arm"/>
+        <button @click="selectPreviousRightArm()" class="prev-selector">&#9650;</button>
+        <button @click="selectNextRightArm()" class="next-selector">&#9660;</button>
+      </div>
+    </div>
+    <div class="bottom-row">
+      <div class="bottom part">
+        <img :src="selectedRobot.base.src" title="base"/>
+        <button @click="selectPreviousBase()" class="prev-selector">&#9668;</button>
+        <button @click="selectNextBase()" class="next-selector">&#9658;</button>
+      </div>
+    </div>
+    <div>
+      <h1>Cart</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Robot</th>
+          <th class="cost">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(robot, index) in cart" :key="index">
+          <td>{{robot.head.title}}</td>
+          <td class="cost">{{robot.cost}}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</template>
+
+<script>
+import availableParts from '../data/parts';
+
+function getPreviousValidIndex(index, length) {
+  const deprecatedIndex = index - 1;
+  return deprecatedIndex < 0 ? length - 1 : deprecatedIndex;
+}
+
+function getNextValidIndex(index, length) {
+  const incrementedIndex = index + 1;
+  return incrementedIndex > length - 1 ? 0 : incrementedIndex;
+}
+
+export default {
+  name: 'RobotBuilder',
+  data() {
+    return {
+      availableParts,
+      cart: [],
+      selectedHeadIndex: 0,
+      selectedLeftArmIndex: 0,
+      selectedTorsoIndex: 0,
+      selectedRightArmIndex: 0,
+      selectedBaseIndex: 0,
+    };
+  },
+  computed: {
+    saleBorderClass() {
+      return this.selectedRobot.head.onSale ? 'sale-border' : '';
+    },
+    headBorderStyle() {
+      return {
+        border: this.selectedRobot.head.onSale
+          ? '3px solid red'
+          : '3px solid #aaa',
+      };
+    },
+    selectedRobot() {
+      return {
+        head: availableParts.heads[this.selectedHeadIndex],
+        leftArm: availableParts.arms[this.selectedLeftArmIndex],
+        torso: availableParts.torsos[this.selectedTorsoIndex],
+        rightArm: availableParts.arms[this.selectedRightArmIndex],
+        base: availableParts.bases[this.selectedBaseIndex],
+      };
+    },
+  },
+  methods: {
+    addToCart() {
+      const robot = this.selectedRobot;
+      const robotParts = Object.values(robot);
+      const cost = robotParts.reduce((total, part) => total + part.cost, 0);
+      this.cart.push(Object.assign({}, robot, { cost }));
+    },
+    selectNextHead() {
+      const componentIndex = this.selectedHeadIndex;
+      const arrLength = availableParts.heads.length;
+      this.selectedHeadIndex = getNextValidIndex(componentIndex, arrLength);
+    },
+    selectPreviousHead() {
+      const componentIndex = this.selectedHeadIndex;
+      const arrLength = availableParts.heads.length;
+      this.selectedHeadIndex = getPreviousValidIndex(componentIndex, arrLength);
+    },
+    selectNextLeftArm() {
+      const componentIndex = this.selectedLeftArmIndex;
+      const arrLength = availableParts.arms.length;
+      this.selectedLeftArmIndex = getNextValidIndex(componentIndex, arrLength);
+    },
+    selectPreviousLeftArm() {
+      const componentIndex = this.selectedLeftArmIndex;
+      const arrLength = availableParts.arms.length;
+      this.selectedLeftArmIndex = getPreviousValidIndex(componentIndex, arrLength);
+    },
+    selectNextTorso() {
+      const componentIndex = this.selectedTorsoIndex;
+      const arrLength = availableParts.torsos.length;
+      this.selectedTorsoIndex = getNextValidIndex(componentIndex, arrLength);
+    },
+    selectPreviousTorso() {
+      const componentIndex = this.selectedTorsoIndex;
+      const arrLength = availableParts.torsos.length;
+      this.selectedTorsoIndex = getPreviousValidIndex(componentIndex, arrLength);
+    },
+    selectNextRightArm() {
+      const componentIndex = this.selectedRightArmIndex;
+      const arrLength = availableParts.arms.length;
+      this.selectedRightArmIndex = getNextValidIndex(componentIndex, arrLength);
+    },
+    selectPreviousRightArm() {
+      const componentIndex = this.selectedRightArmIndex;
+      const arrLength = availableParts.arms.length;
+      this.selectedRightArmIndex = getPreviousValidIndex(componentIndex, arrLength);
+    },
+    selectNextBase() {
+      const componentIndex = this.selectedBaseIndex;
+      const arrLength = availableParts.bases.length;
+      this.selectedBaseIndex = getNextValidIndex(componentIndex, arrLength);
+    },
+    selectPreviousBase() {
+      const componentIndex = this.selectedBaseIndex;
+      const arrLength = availableParts.bases.length;
+      this.selectedBaseIndex = getPreviousValidIndex(componentIndex, arrLength);
+    },
+  },
+};
+</script>
+
+<style>
+.part {
+  position: relative;
+  width:165px;
+  height:165px;
+  border: 3px solid #aaa;
+}
+.part img {
+  width:165px;
+}
+.top-row {
+  display:flex;
+  justify-content: space-around;
+}
+.middle-row {
+  display:flex;
+  justify-content: center;
+}
+.bottom-row {
+  display:flex;
+  justify-content: space-around;
+  border-top: none;
+}
+.head {
+  border-bottom: none;
+}
+.left {
+  border-right: none;
+}
+.right {
+  border-left: none;
+}
+.left img {
+  transform: rotate(-90deg);
+}
+.right img {
+  transform: rotate(90deg);
+}
+.bottom {
+  border-top: none;
+}
+.prev-selector {
+  position: absolute;
+  z-index:1;
+  top: -3px;
+  left: -28px;
+  width: 25px;
+  height: 171px;
+}
+.next-selector {
+  position: absolute;
+  z-index:1;
+  top: -3px;
+  right: -28px;
+  width: 25px;
+  height: 171px;
+}
+.center .prev-selector, .center .next-selector {
+  opacity:0.8;
+}
+.left .prev-selector {
+  top: -28px;
+  left: -3px;
+  width: 144px;
+  height: 25px;
+}
+.left .next-selector {
+  top: auto;
+  bottom: -28px;
+  left: -3px;
+  width: 144px;
+  height: 25px;
+}
+.right .prev-selector {
+  top: -28px;
+  left: 24px;
+  width: 144px;
+  height: 25px;
+}
+.right .next-selector {
+  top: auto;
+  bottom: -28px;
+  left: 24px;
+  width: 144px;
+  height: 25px;
+}
+.right .next-selector {
+  right: -3px;
+}
+.robot-name {
+  position: absolute;
+  top: -25px;
+  text-align: center;
+  width: 100%;
+}
+.sale {
+  color: red;
+}
+.content {
+  position: relative;
+}
+.add-to-cart {
+  position: absolute;
+  right: 30px;
+  width: 220px;
+  padding: 3px;
+  font-size: 16px;
+}
+td, th {
+  text-align: left;
+  padding-right: 20px;
+  padding: 5px;
+}
+.cost {
+  text-align: right;
+}
+.sale-border {
+  border: 3px solid red;
+}
+</style>
